@@ -5,6 +5,8 @@ import { DbService } from '../services/db.service';
 import { Title } from '@angular/platform-browser';
 import { AuthService } from '../services/auth.service';
 import { NgForm, FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
+import { environment } from '../../environments/environment';
 
 @Component({
 	selector: 'app-partido',
@@ -27,7 +29,8 @@ export class PartidoComponent implements OnInit {
 		private route: ActivatedRoute,
 		private db: DbService,
 		private titleService: Title,
-		private authService: AuthService
+		private authService: AuthService,
+		private sanitizer: DomSanitizer
 	) {
 		this.loaded = false;
 		this.partido = null;
@@ -62,6 +65,8 @@ export class PartidoComponent implements OnInit {
 					  this.partido.lugar.get()
 						.then(res => {
 							this.lugar = res.data();
+							this.lugar.embed = "https://www.google.com/maps/embed/v1/place?q=" + encodeURIComponent(this.lugar.direccion) + "%2C%20santa%20fe%2C%20santa%20fe&key=" + environment.mapsApiKey;
+							this.lugar.embed = this.sanitizer.bypassSecurityTrustResourceUrl(this.lugar.embed);
 						}).catch(err => console.error(err));
 				}
 

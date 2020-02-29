@@ -14,6 +14,9 @@
 		<div class="columns">
 			<div class="column is-one-third">
 				<div class="card">
+					<div *ngIf="this.lugar">
+						<iframe width="600" height="450" frameborder="0" style="border:0" [src]="this.lugar.embed" allowfullscreen></iframe> 
+					</div>
 					<header class="card-content" *ngIf="this.lugar">
 						<strong>{{ lugar.nombre }}</strong>, <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ lugar.direccion }},+Santa+Fe,+Santa+Fe,+Argentina">{{ lugar.direccion }}</a>
 					</header>
@@ -45,7 +48,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr *ngFor="let jugador of partido.jugadores; let row = index">
+								<tr *ngFor="let jugador of partido.jugadores; let row = index" [class.is-selected]="this.getCurrentUserId() == jugador.uuid">
 									<td class="has-text-right">{{ row + 1 }}</td>
 									<td>{{ jugador.nombre }}</td>
 									<td>{{ jugador.fecha.seconds * 1000 | date:'dd-MM-yyyy HH:mm' }}</td>
