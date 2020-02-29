@@ -1,0 +1,13 @@
+<div *ngIf="this.loaded">
+<app-header></app-header>
+
+<section class="section">
+	<div class="container">
+	  <router-outlet></router-outlet>
+	</div>
+</section>
+
+<app-footer></app-footer>
+</div>
+<div id="notLoadedScreen" [class.hidden]="this.loaded">
+</div>
