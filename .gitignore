@@ -6,6 +6,7 @@
 /out-tsc
 /.firebase
 /src/environments/environment.ts
+/src/environments/environment.prod.ts
 # Only exists if Bazel was run
 /bazel-out
 
