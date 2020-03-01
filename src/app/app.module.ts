@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -18,6 +18,10 @@ import { RegisterComponent } from './register/register.component';
 import { CanchasComponent } from './canchas/canchas.component';
 import { PartidoComponent } from './partido/partido.component';
 import { CrearPartidoComponent } from './crear-partido/crear-partido.component';
+
+import { registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
+registerLocaleData(localeEsAr, 'es-AR');
 
 @NgModule({
   declarations: [
@@ -41,7 +45,9 @@ import { CrearPartidoComponent } from './crear-partido/crear-partido.component';
     ReactiveFormsModule,
     AngularFireAuthModule,
   ],
-  providers: [],
+  providers: [
+      { provide: LOCALE_ID, useValue: 'es-AR' },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

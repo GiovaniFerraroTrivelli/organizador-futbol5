@@ -24,11 +24,18 @@
 						<progress class="progress is-small" max="100">15%</progress>
 					</header>
 					<footer class="card-footer" style="padding:20px 15px">
-						<strong>Fecha y hora</strong>: {{ partido.fecha.seconds * 1000 | date:'dd-MM-yyyy HH:mm' }}
+						{{ partido.fecha.seconds * 1000 | date:'EEEE, dd \'de\' MMMM \'a las\' HH:mm' : '' : 'es-AR' }}
 					</footer>
 				</div>
-				<div *ngIf="this.getCurrentUserId() == this.partido.owner" class="has-text-right" style="padding:20px 0">
-					<button class="button is-danger is-small" (click)="deletePartido()">
+				<div class="has-text-right" style="padding:20px 0">
+					<a class="button is-success is-small" style="margin-right:10px" target="_blank" [href]="sharerLink">
+						<span class="icon is-small">
+							<i class="fab fa-whatsapp"></i>
+						</span>
+						<span>Compartir</span>
+					</a>
+
+					<button class="button is-danger is-small" (click)="deletePartido()" *ngIf="this.getCurrentUserId() == this.partido.owner">
 						<span class="icon is-small">
 							<i class="fas fa-times"></i>
 						</span>
@@ -48,10 +55,18 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr *ngFor="let jugador of partido.jugadores; let row = index" [class.is-selected]="this.getCurrentUserId() == jugador.uuid">
+								<tr *ngFor="let jugador of partido.jugadores; let row = index" [class.is-selected]="this.getCurrentUserId() == jugador.uuid" (click)="toggleIfApplies(row, jugador)">
 									<td class="has-text-right">{{ row + 1 }}</td>
 									<td>{{ jugador.nombre }}</td>
-									<td>{{ jugador.fecha.seconds * 1000 | date:'dd-MM-yyyy HH:mm' }}</td>
+									<td *ngIf="selectedRow != row">{{ jugador.fecha.seconds * 1000 | date:'dd-MM-yyyy HH:mm' }}</td>
+									<td *ngIf="selectedRow == row">
+										<button type="button" class="button is-danger is-small" (click)="deletePlayer(row)" *ngIf="this.getCurrentUserId() == this.partido.owner || this.getCurrentUserId() == jugador.uuid">
+											<span class="icon is-small">
+												<i class="fas fa-times"></i>
+											</span>
+											<span>Eliminar</span>
+										</button>
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -65,6 +80,7 @@
 							<button class="button is-info" type="submit" [disabled]="!addPlayer.valid">Agregar</button>
 						</div>
 					</div>
+					<p class="help is-danger" *ngIf="alreadyWithThatName">Ya hay alguien con este nombre.</p>
 				</form>
 			</div>
 		</div>

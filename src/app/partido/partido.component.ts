@@ -24,6 +24,9 @@ export class PartidoComponent implements OnInit {
 	private deleteCount : number;
 	private messageDelete: string;
 	private lugar;
+	private sharerLink: string;
+	private alreadyWithThatName: boolean;
+	private selectedRow : number;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -38,6 +41,9 @@ export class PartidoComponent implements OnInit {
 		this.notFound = false;
 		this.deleteCount = 0;
 		this.messageDelete = "Borrar partido";
+		this.sharerLink = "";
+		this.alreadyWithThatName = false;
+		this.selectedRow = -1;
 
 		this.addPlayer = new FormGroup({
 			nuevoJugador: new FormControl(null, [ Validators.required, Validators.pattern('^.{1,32}$') ])
@@ -70,6 +76,7 @@ export class PartidoComponent implements OnInit {
 						}).catch(err => console.error(err));
 				}
 
+				this.sharerLink = "https://wa.me/?text=" + encodeURIComponent("Partido: " + this.partido.nombre + " - Jugadores: " + this.partido.jugadores.length + " / 10 - https://f5.shiobi.me/partido/" + this.partido.id);
 				this.titleService.setTitle("Información de partido: \"" + this.partido.nombre + "\"");
 			} else {
 				this.titleService.setTitle("Partido no encontrado");
@@ -105,6 +112,18 @@ export class PartidoComponent implements OnInit {
 	}
 
 	addJugador(f : NgForm) {
+		f.value.nuevoJugador = f.value.nuevoJugador.trim();
+
+		if(!f.value.nuevoJugador.length)
+			return;
+
+		if(this.partido.jugadores.filter(jugador => jugador.nombre === f.value.nuevoJugador).length) {
+			this.alreadyWithThatName = true;
+			return;
+		}
+
+		this.alreadyWithThatName = false;
+
 		this.partido.jugadores.push({
 			nombre: f.value.nuevoJugador,
 			uuid: this.getCurrentUserId(),
@@ -135,5 +154,16 @@ export class PartidoComponent implements OnInit {
 
 	canAddPlayer() {
 		return (this.partido.fecha.seconds * 1000 > (new Date()).getTime());
+	}
+
+	deletePlayer(playerId : number) {
+		this.partido.jugadores.splice(playerId, 1);
+		this.updateJugadores(this.partido.id);
+	}
+
+	toggleIfApplies(row, jugador) {
+		if(this.getCurrentUserId() == jugador.uuid || this.getCurrentUserId() == this.partido.owner) {
+			this.selectedRow = (this.selectedRow == row) ? -1 : row;
+		}
 	}
 }

@@ -26,7 +26,7 @@
 			<tr *ngFor="let partido of partidosProximos" (click)="goToPartido(partido.id)">
 				<td>{{ partido.data.nombre }}</td>
 				<td>{{ partido.lugar.nombre }}</td>
-				<td>{{ partido.data.fecha.seconds * 1000 | date:'dd-MM-yyyy HH:mm' }}</td>
+				<td>{{ partido.data.fecha.seconds * 1000 | date:'EEEE, dd \'de\' MMMM \'a las\' HH:mm' : '' : 'es-AR' }}</td>
 				<td *ngIf="partido.data.jugadores">{{ partido.data.jugadores.length }} / 10</td>
 			</tr>
 		</tbody>

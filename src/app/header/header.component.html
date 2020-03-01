@@ -15,24 +15,24 @@
 					</div>
 					<div id="navbarMenuHero2" class="navbar-menu" [class.is-active]="isMenuOpen">
 						<div class="navbar-end">
-							<a class="navbar-item" [class.is-active]="isCurrentRouter('/')" routerLink="/">
+							<a class="navbar-item" (click)="isMenuOpen = false" [class.is-active]="isCurrentRouter('/')" routerLink="/">
 								Inicio
 							</a>
-							<a class="navbar-item" [class.is-active]="isCurrentRouter('/partidos')" routerLink="/partidos">
+							<a class="navbar-item" (click)="isMenuOpen = false" [class.is-active]="isCurrentRouter('/partidos')" routerLink="/partidos">
 								Partidos
 							</a>
-							<a class="navbar-item" [class.is-active]="isCurrentRouter('/canchas')" routerLink="/canchas">
+							<a class="navbar-item" (click)="isMenuOpen = false" [class.is-active]="isCurrentRouter('/canchas')" routerLink="/canchas">
 								Canchas
 							</a>
 							<span class="navbar-item">
-								<a *ngIf="!isUserLoggedIn()" class="button is-primary is-inverted" routerLink="/iniciar-sesion">
+								<a *ngIf="!isUserLoggedIn()" class="button is-primary is-inverted" routerLink="/iniciar-sesion" (click)="isMenuOpen = false">
 									<span class="icon">
 										<i class="fas fa-sign-in-alt"></i>
 									</span>
 
 									<span>Iniciar sesión</span>
 								</a>
-								<a *ngIf="isUserLoggedIn()" (click)="doLogOut()">
+								<a *ngIf="isUserLoggedIn()" (click)="[doLogOut(), isMenuOpen = false]">
 									<span class="icon">
 										<i class="fas fa-sign-out-alt"></i>
 									</span>
