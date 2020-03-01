@@ -10,7 +10,7 @@ import { Title } from '@angular/platform-browser';
 export class CanchasComponent implements OnInit {
 
 	public title = "Listado de canchas";
-	private canchas;
+	canchas;
 
 	constructor(
 		private db : DbService,

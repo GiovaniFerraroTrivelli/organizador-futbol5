@@ -16,12 +16,12 @@ export class PartidosComponent implements OnInit {
 
 	public title = "Listado de partidos";
 	
-	private partidosProximos;
-	private partidosYaJugados;
-	private showCreateModal : boolean;
-	private canchas;
-	private createPartidoForm : FormGroup;
-	private isJuegaChecked: boolean;
+	partidosProximos;
+	partidosYaJugados;
+	showCreateModal : boolean;
+	canchas;
+	createPartidoForm : FormGroup;
+	isJuegaChecked: boolean;
 
 	minDate = new Date();
 
@@ -118,7 +118,7 @@ export class PartidosComponent implements OnInit {
 		this.router.navigate(['/partido/' + partidoId]);
 	}
 
-	submitPartido(f: NgForm) {
+	submitPartido(f) {
 		this.db.createPartido(
 			f.value.nombre,
 			f.value.cancha,

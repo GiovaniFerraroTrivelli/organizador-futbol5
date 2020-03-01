@@ -10,8 +10,8 @@ import { Router } from "@angular/router";
 })
 
 export class RegisterComponent implements OnInit {
-	public errorMessage : string;
-	private registerForm : FormGroup;
+	errorMessage : string;
+	registerForm : FormGroup;
 
 	constructor(
 		private authService : AuthService,
@@ -31,7 +31,7 @@ export class RegisterComponent implements OnInit {
 			this.router.navigate(['/']);
     }
 
-	tryRegister(f: NgForm) {
+	tryRegister(f) {
 		this.authService.doRegister(f.value).then(res => {
 			this.errorMessage = null;
 			this.router.navigate(['/']);

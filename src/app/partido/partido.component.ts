@@ -15,18 +15,20 @@ import { environment } from '../../environments/environment';
 })
 export class PartidoComponent implements OnInit {
 
-	private routeSub: Subscription;
-	private partido;
-	private loaded : boolean;
 	public title = "Cargando partido...";
-	private addPlayer : FormGroup;
-	private notFound : boolean;
+	private routeSub: Subscription;
+	
+	partido;
+	loaded : boolean;
+	addPlayer : FormGroup;
+	notFound : boolean;
+	messageDelete: string;
+	sharerLink: string;
+	lugar;
+	alreadyWithThatName: boolean;
+	selectedRow : number;
+
 	private deleteCount : number;
-	private messageDelete: string;
-	private lugar;
-	private sharerLink: string;
-	private alreadyWithThatName: boolean;
-	private selectedRow : number;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -111,7 +113,7 @@ export class PartidoComponent implements OnInit {
 		});
 	}
 
-	addJugador(f : NgForm) {
+	addJugador(f) {
 		f.value.nuevoJugador = f.value.nuevoJugador.trim();
 
 		if(!f.value.nuevoJugador.length)

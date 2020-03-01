@@ -10,8 +10,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class AppComponent {
 	title = 'organizador-futbol5';
 
-	public currentUser: string;
-	private loaded: boolean;
+	currentUser: string;
+	loaded: boolean;
+	
 	private elapsedTime: number;
 
 	constructor(

@@ -10,8 +10,8 @@ import { Router } from "@angular/router";
 })
 
 export class LoginComponent implements OnInit {
-	public errorMessage : string;
-	private loginForm : FormGroup;
+	errorMessage : string;
+	loginForm : FormGroup;
 
 	constructor(
 		private authService : AuthService,
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
 		this.authService.logOut();
 	}
 
-	tryLogin(f: NgForm) {
+	tryLogin(f) {
 		this.authService.doLogin(f.value).then(res => {
 			this.errorMessage = null;
 			this.router.navigate(['/']);

@@ -11,12 +11,12 @@ import { Observable } from 'rxjs';
 })
 export class HeaderComponent implements OnInit {
 
-	private isMenuOpen : boolean;
+	isMenuOpen : boolean;
 
 	constructor(
 		private authService : AuthService,
 		private router: Router,
-		private titleService: Title
+		public titleService: Title
 	) { }
 
 	ngOnInit() {
