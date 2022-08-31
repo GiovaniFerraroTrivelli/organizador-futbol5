@@ -8,6 +8,9 @@
 			"schematics": {
 				"@schematics/angular:component": {
 					"style": "scss"
+				},
+				"@schematics/angular:application": {
+					"strict": true
 				}
 			},
 			"root": "",
@@ -43,7 +46,6 @@
 							"optimization": true,
 							"outputHashing": "all",
 							"sourceMap": false,
-							"extractCss": true,
 							"namedChunks": false,
 							"aot": true,
 							"extractLicenses": true,
@@ -72,9 +74,8 @@
 							"optimization": false,
 							"outputHashing": "all",
 							"sourceMap": true,
-							"extractCss": true,
-							"namedChunks": false,
-							"aot": true,
+							"namedChunks": true,
+							"aot": false,
 							"extractLicenses": false,
 							"vendorChunk": false,
 							"buildOptimizer": false,
@@ -96,9 +97,12 @@
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"options": {
-						"browserTarget": "organizador-futbol5:build"
+						"browserTarget": "organizador-futbol5:build:dev"
 					},
 					"configurations": {
+						"production": {
+							"browserTarget": "organizador-futbol5:build:production"
+						},
 						"dev": {
 							"browserTarget": "organizador-futbol5:build:dev"
 						}
