@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { Observable } from 'rxjs/Observable';
-import * as firebase from 'firebase/app';
+import {Injectable} from '@angular/core';
+import {AngularFireAuth} from '@angular/fire/compat/auth';
+import {GoogleAuthProvider} from 'firebase/auth';
+import firebase from 'firebase/compat/app';
 
 @Injectable({
 	providedIn: 'root'
@@ -14,39 +14,38 @@ export class AuthService {
 	) {
 	}
 
-	getUser() {
-		return window.localStorage.getItem("uid");
+	getUser(): string {
+		return window.localStorage.getItem('uid');
 	}
 
-	doRegister(value) {
+	doRegister({email, password}): Promise<firebase.auth.UserCredential> {
 		return new Promise<any>((resolve, reject) => {
-			firebase.auth().createUserWithEmailAndPassword(value.email, value.password)
-		 		.then(res => {
-		   			resolve(res);
-		 		}, err => reject(err))
-   		})
-	 }
-
-	doLogin(value) {
-		return firebase.auth().signInWithEmailAndPassword(value.email, value.password)
+			this.afAuth.createUserWithEmailAndPassword(email, password)
+				.then(res => {
+					resolve(res);
+				}, err => reject(err));
+		});
 	}
 
-	doGoogleLogin() {
+	doLogin({email, password}): Promise<firebase.auth.UserCredential> {
+		return this.afAuth.signInWithEmailAndPassword(email, password);
+	}
+
+	doGoogleLogin(): Promise<firebase.auth.UserCredential> {
 		return new Promise<any>((resolve, reject) => {
-			let provider = new firebase.auth.GoogleAuthProvider();
-			
+			const provider = new GoogleAuthProvider();
+
 			provider.addScope('profile');
 			provider.addScope('email');
-		
-			this.afAuth.auth.signInWithPopup(provider)
+
+			this.afAuth.signInWithPopup(provider)
 				.then(res => {
-		  			resolve(res);
-				})
-		})
+					resolve(res);
+				});
+		});
 	}
 
-	logOut() {
-		this.afAuth.auth.signOut();
-		window.localStorage.removeItem("uid");
+	logOut(): void {
+		this.afAuth.signOut().then(() => window.localStorage.removeItem('uid'));
 	}
 }

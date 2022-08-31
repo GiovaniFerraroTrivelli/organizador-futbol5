@@ -1,0 +1,71 @@
+<form #cForm="ngForm" [formGroup]="matchForm" (submit)="submit()">
+    <div class="modal is-active">
+        <div class="modal-background" (click)="close()"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Crear partido</p>
+                <button class="delete" type="button" (click)="close()" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Nombre</label>
+                    <div class="control">
+                        <input class="input" type="text"
+                               [class.is-danger]="name.invalid && (name.dirty || name.touched)"
+                               formControlName="name">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Fecha</label>
+                    <div class="control">
+                        <input class="input" type="date" min="{{ minDate | date: 'yyyy-MM-dd' }}"
+                               [class.is-danger]="date.invalid && (date.dirty || date.touched)"
+                               formControlName="date">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Hora</label>
+                    <div class="control">
+                        <input class="input" type="time"
+                               [class.is-danger]="time.invalid && (time.dirty || time.touched)" formControlName="time">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Lugar</label>
+                    <div class="select">
+                        <select formControlName="field">
+                            <option *ngFor="let field of fields" value="{{ field.id }}">{{ field.name }}
+                                ({{ field.address }})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <label class="checkbox">
+                            <input type="checkbox" (change)="toggleAddMe()" formControlName="included">
+                            Agregarte automáticamente como jugador
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field" *ngIf="includeMe">
+                    <label class="label">Tu nombre</label>
+                    <div class="control">
+                        <input class="input" [class.is-danger]="nick.invalid && (nick.dirty || nick.touched)"
+                               type="text"
+                               formControlName="nick">
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success" type="submit" [disabled]="!matchForm.valid">Guardar</button>
+                <button class="button" type="button" (click)="close()">Cancelar</button>
+            </footer>
+        </div>
+    </div>
+</form>

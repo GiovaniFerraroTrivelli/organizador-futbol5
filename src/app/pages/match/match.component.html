@@ -1,0 +1,99 @@
+<article class="message is-danger" *ngIf="(this.loaded && this.match == null) || this.notFound == true">
+    <div class="message-header">
+        <p>Partido no encontrado</p>
+    </div>
+    <div class="message-body">
+        El partido solicitado no se encontró. Tal vez fue borrado previamente...
+    </div>
+</article>
+
+<div *ngIf="!this.loaded">
+    <progress class="progress is-large is-info" max="100">25%</progress>
+</div>
+<div *ngIf="this.loaded">
+    <div *ngIf="this.match != null">
+
+        <div class="columns">
+            <div class="column is-one-third">
+                <div class="card">
+                    <div *ngIf="this.field">
+                        <iframe width="100%" height="450" style="border:0" [src]="this.field.embed"
+                                allowfullscreen></iframe>
+                    </div>
+                    <header class="card-content" *ngIf="this.field">
+                        <strong>{{ this.field.name }}</strong>, <a target="_blank"
+                                                                   href="https://www.google.com/maps/search/?api=1&query={{ this.field.address }},+Santa+Fe,+Santa+Fe,+Argentina">{{ this.field.address }}</a>
+                    </header>
+                    <header class="card-content" *ngIf="!this.match.field">
+                        <progress class="progress is-small" max="100">15%</progress>
+                    </header>
+                    <footer class="card-footer" style="padding: 20px 15px">
+                        {{ this.match.date?.toDate() | date: 'medium' }}
+                    </footer>
+                </div>
+                <div class="has-text-right" style="padding:20px 0">
+                    <a class="button is-success is-small" style="margin-right:10px" target="_blank" [href]="sharerURL">
+						<span class="icon is-small">
+							<i class="fab fa-whatsapp"></i>
+						</span>
+                        <span>Compartir</span>
+                    </a>
+
+                    <button class="button is-danger is-small" (click)="deleteMatch()"
+                            *ngIf="this.getCurrentUserId() == this.match.owner">
+						<span class="icon is-small">
+							<i class="fas fa-times"></i>
+						</span>
+                        <span>{{ messageDelete }}</span>
+                    </button>
+                </div>
+            </div>
+            <div class="column">
+                <form #aForm="ngForm" [formGroup]="playerForm" (submit)="addPlayer()">
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-hoverable">
+                            <thead>
+                            <tr>
+                                <th class="has-text-right">#</th>
+                                <th>Jugadores</th>
+                                <th>Fecha y hora</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let player of match.players; let row = index"
+                                [class.is-selected]="this.getCurrentUserId() == player.uuid"
+                                (click)="toggleIfApplies(row, player)">
+                                <td class="has-text-right">{{ row + 1 }}</td>
+                                <td>{{ player.name }}</td>
+                                <td *ngIf="selectedRow != row">
+                                    {{ player.date?.toDate() | date: 'medium' }}
+                                </td>
+                                <td *ngIf="selectedRow == row">
+                                    <button type="button" class="button is-danger is-small" (click)="deletePlayer(row)"
+                                            *ngIf="this.getCurrentUserId() == this.match.owner || this.getCurrentUserId() == player.uuid">
+											<span class="icon is-small">
+												<i class="fas fa-times"></i>
+											</span>
+                                        <span>Eliminar</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="field has-addons" *ngIf="getCurrentUserId() && canAddPlayer()">
+                        <div class="control is-expanded">
+                            <input formControlName="name" class="input" type="text"
+                                   placeholder="Agregar jugador...">
+                        </div>
+                        <div class="control">
+                            <button class="button is-info" type="submit" [disabled]="!playerForm.valid">Agregar</button>
+                        </div>
+                    </div>
+                    <p class="help is-danger" *ngIf="nameTaken">Ya hay alguien con este nombre.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

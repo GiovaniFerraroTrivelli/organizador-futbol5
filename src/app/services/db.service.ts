@@ -1,71 +1,54 @@
-import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
-import * as firebase from 'firebase/app';
+import {Injectable} from '@angular/core';
+import {
+	Action,
+	AngularFirestore,
+	AngularFirestoreDocument,
+	DocumentChangeAction,
+	DocumentReference,
+	DocumentSnapshot
+} from '@angular/fire/compat/firestore';
+import {Observable} from 'rxjs';
+import {Field} from '../interfaces/field';
+import {Match} from '../interfaces/match';
+import {Player} from '../interfaces/player';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 
 export class DbService {
 
 	constructor(
-		private db: AngularFirestore,
-		private authService: AuthService
-	) { }
-
-	createPartido(nombre : string, cancha : string, fecha : string, hora : string, juega : boolean, tag? : string) {
-		let jugadores = [];
-
-		if(juega) {
-			jugadores.push({
-				nombre: tag,
-				uuid: this.authService.getUser(),
-				fecha: firebase.firestore.Timestamp.fromDate(new Date()),
-			});
-		}
-
-		return this.db.collection('partidos').add({
-			nombre: nombre,
-			lugar: this.db.doc('lugares/' + cancha).ref,
-			fecha: firebase.firestore.Timestamp.fromDate(new Date(fecha + ' ' + hora)),
-			jugadores: jugadores,
-			owner: this.authService.getUser()
-		});
+		private store: AngularFirestore
+	) {
 	}
 
-	getPartidoById(documentId: string) {
-		return this.db.collection('partidos').doc(documentId).snapshotChanges();
+	createMatch(match: Match, field?: string): Promise<DocumentReference<Match>> {
+		match.field = field ? this.store.doc<Field>(`fields/${field}`).ref : null;
+		return this.store.collection<Match>('matches').add(match);
 	}
 
-	getCanchas() {
-		return this.db.collection('lugares').snapshotChanges();
+	getMatchById(documentId: string): AngularFirestoreDocument<Match> {
+		return this.store.collection<Match>('matches').doc(documentId);
 	}
 
-	getPartidos() {
-		return this.db.collection('partidos').snapshotChanges();
+	getFields(): Observable<DocumentChangeAction<Field>[]> {
+		return this.store.collection<Field>('fields').snapshotChanges();
 	}
 
-	updatePartido(documentId: string, data: any) {
-    	return this.db.collection('partidos').doc(documentId).set(data);
-    }
+	getMatches(): Observable<DocumentChangeAction<Match>[]> {
+		return this.store.collection<Match>('matches').snapshotChanges();
+	}
 
-    updateJugadores(documentId: string, jugadores: any) {
-    	return this.db.collection('partidos').doc(documentId).update({
-    		jugadores: jugadores
-    	});
-    }
+	updateMatch(documentId: string, data: any): Promise<void> {
+		return this.store.collection('matches').doc(documentId).set(data);
+	}
 
-    deletePartido(documentId: string) {
-    	this.db.collection('partidos').doc(documentId).delete().then(function() {
-			console.log("Document successfully deleted!");
-		}).catch(function(error) {
-			console.error("Error removing document: ", error);
-		});
-    }
+	updatePlayers(matchId: string, players: Player[]): Promise<void> {
+		return this.store.collection<Match>('matches').doc(matchId).update({players});
+	}
 
-    getFirebaseCurDate() {
-    	return firebase.firestore.Timestamp.fromDate(new Date());
-    }
+	deleteMatch(matchId: string): Promise<void> {
+		return this.store.collection('matches').doc(matchId).delete();
+	}
 }

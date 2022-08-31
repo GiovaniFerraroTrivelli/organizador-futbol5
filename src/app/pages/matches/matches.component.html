@@ -1,0 +1,20 @@
+<h3 class="subtitle is-3">Próximos <span class="is-hidden-mobile">partidos</span>
+    <button class="button is-pulled-right" (click)="modalOpen = true">
+    <span class="icon">
+    	<i class="fas fa-plus"></i>
+    </span>
+        <span>Crear partido</span>
+    </button>
+</h3>
+
+<div class="match-table">
+    <app-match-table [matches]="matches.upcoming"></app-match-table>
+</div>
+
+<h3 class="subtitle is-3">Partidos pasados</h3>
+
+<div class="match-table">
+    <app-match-table [matches]="matches.past"></app-match-table>
+</div>
+
+<app-create-match (closeModal)="modalOpen = false" *ngIf="modalOpen"></app-create-match>

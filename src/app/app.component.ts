@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
+import {Component, OnInit} from '@angular/core';
+import {AngularFireAuth} from '@angular/fire/compat/auth';
 
 @Component({
 	selector: 'app-root',
@@ -7,45 +7,40 @@ import { AngularFireAuth } from '@angular/fire/auth';
 	styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent {
-	title = 'organizador-futbol5';
+export class AppComponent implements OnInit {
+	readonly LOADING_MIN_TIME = 2500;
 
-	currentUser: string;
+	currentUserUid: string;
 	loaded: boolean;
-	
-	private elapsedTime: number;
+	elapsedTime: number;
 
 	constructor(
 		public afAuth: AngularFireAuth
 	) {
+		this.currentUserUid = null;
 		this.loaded = false;
 		this.elapsedTime = (new Date()).getTime();
 	}
 
-	ngOnInit() {
-		this.currentUser = null;
-
+	ngOnInit(): void {
 		this.afAuth.authState.subscribe(user => {
+			this.currentUserUid = user?.uid || null;
+
 			if (user) {
-				console.log("¡Sesión iniciada correctamente!");
-				this.currentUser = user.uid;
-				window.localStorage.setItem("uid", this.currentUser);
+				window.localStorage.setItem('uid', this.currentUserUid);
 			} else {
-				console.log("¡Sesión no iniciada!");
-				this.currentUser = null;
-				window.localStorage.removeItem("uid");
+				window.localStorage.removeItem('uid');
 			}
 
-			let curTime = (new Date()).getTime();
+			const curTime = (new Date()).getTime();
 
-			if(curTime - this.elapsedTime < 2500)
-			{			
-				setTimeout(()=> {
-      				this.loaded = true;
-    			}, 2500 - (curTime - this.elapsedTime));
-			}
-			else
+			if (curTime - this.elapsedTime < this.LOADING_MIN_TIME) {
+				setTimeout(() => {
+					this.loaded = true;
+				}, this.LOADING_MIN_TIME - (curTime - this.elapsedTime));
+			} else {
 				this.loaded = true;
+			}
 		});
 	}
 }

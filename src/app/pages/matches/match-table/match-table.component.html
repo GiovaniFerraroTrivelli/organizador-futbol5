@@ -1,0 +1,21 @@
+<div class="table-container">
+    <table class="table is-fullwidth is-hoverable" style="cursor: pointer">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Jugadores</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngIf="!matches">
+            <td colspan="2"><i class="fas fa-spinner"></i> Cargando partidos...</td>
+        </tr>
+        <tr *ngFor="let match of matches" (click)="goToMatch(match.id)">
+            <td>{{ match.name }}</td>
+            <td>{{ match.date?.toDate() | date: 'medium' }}</td>
+            <td *ngIf="match.players">{{ match.players?.length || 0 }} / 10</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

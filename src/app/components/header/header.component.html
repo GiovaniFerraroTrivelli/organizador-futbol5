@@ -1,0 +1,65 @@
+<section class="hero is-primary">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a class="navbar-item" routerLink="/">
+                        <img src="../../../assets/logo.png" alt="Logo">
+                    </a>
+                    <span class="navbar-burger burger" [class.is-active]="isMenuOpen" data-target="navbarMenuHero2"
+                          (click)="isMenuOpen = !isMenuOpen">
+							<span></span>
+							<span></span>
+							<span></span>
+						</span>
+                </div>
+                <div id="navbarMenuHero2" class="navbar-menu" [class.is-active]="isMenuOpen">
+                    <div class="navbar-end">
+                        <a class="navbar-item" (click)="isMenuOpen = false" [class.is-active]="router.url === '/'"
+                           routerLink="/">
+                            Inicio
+                        </a>
+                        <a class="navbar-item" (click)="isMenuOpen = false"
+                           [class.is-active]="router.url === '/partidos'"
+                           routerLink="/partidos">
+                            Partidos
+                        </a>
+                        <a class="navbar-item" (click)="isMenuOpen = false"
+                           [class.is-active]="router.url === '/canchas'"
+                           routerLink="/canchas">
+                            Canchas
+                        </a>
+                        <span class="navbar-item">
+								<a *ngIf="!isUserLoggedIn()" class="button is-primary is-inverted"
+                                   routerLink="/iniciar-sesion"
+                                   (click)="isMenuOpen = false">
+									<span class="icon">
+										<i class="fas fa-sign-in-alt"></i>
+									</span>
+
+									<span>Iniciar sesión</span>
+								</a>
+								<a *ngIf="isUserLoggedIn()" (click)="[doLogOut(), isMenuOpen = false]">
+									<span class="icon">
+										<i class="fas fa-sign-out-alt"></i>
+									</span>
+
+									<span>Cerrar sesión</span>
+								</a>
+							</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <h1 class="title">
+                {{ titleService.getTitle() }}
+            </h1>
+            <h2 class="subtitle">
+                Organizador de partidos de fútbol 5
+            </h2>
+        </div>
+    </div>
+</section>
