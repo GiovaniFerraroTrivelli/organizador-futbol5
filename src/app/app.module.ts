@@ -24,6 +24,7 @@ import {environment} from '../environments/environment';
 import {PlayersComponent} from './pages/players/players.component';
 import {CreatePlayerComponent} from './dialogs/create-player/create-player.component';
 import {ToDatePipe} from './pipes/to-date.pipe';
+import {PercentagePipe} from './pipes/percentage.pipe';
 
 registerLocaleData(localeEsAr, 'es-AR');
 
@@ -42,7 +43,8 @@ registerLocaleData(localeEsAr, 'es-AR');
 		CreateMatchComponent,
 		PlayersComponent,
 		CreatePlayerComponent,
-		ToDatePipe
+		ToDatePipe,
+		PercentagePipe
 	],
 	imports: [
 		BrowserModule,

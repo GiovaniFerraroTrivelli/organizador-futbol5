@@ -42,8 +42,6 @@ export class DbService {
 	}
 
 	updatePlayers(matchId: string, players: MatchPlayer[]): Promise<void> {
-		console.log(players);
-
 		return this.store.collection<Match>('matches').doc(matchId).update({
 			players: players.map(player => ({
 				...player,
@@ -73,7 +71,7 @@ export class DbService {
 	}
 
 	countPlayerInMatches(playerId: string): Observable<number> {
-		return this.store.collection<Match>('matches', ref => ref.where(`players.${playerId}`, 'in', playerId)).get().pipe(
+		return this.store.collection<Match>('matches', ref => ref.where(`players.player.uuid`, '==', playerId)).get().pipe(
 			map(matches => matches.docs.length)
 		);
 	}

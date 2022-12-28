@@ -13,15 +13,17 @@
         <tr>
             <th>Jugador</th>
             <th>Recurrente</th>
+            <th>Estadísticas</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngIf="!players">
             <td colspan="2"><i class="fas fa-spinner"></i> Cargando jugadores...</td>
         </tr>
-        <tr *ngFor="let player of players">
+        <tr *ngFor="let player of players; let i = index" [class.is-selected]="i === 0">
             <td>{{ player.name }}</td>
             <td>{{ player.recurrent ? 'Sí' : 'No' }}</td>
+            <td>{{ stats[player.uuid]?.played || 0 }} jugados, {{ stats[player.uuid]?.won || 0 }} ganados ({{ stats[player.uuid]?.won | percentage:stats[player.uuid]?.played }})</td>
         </tr>
         </tbody>
     </table>

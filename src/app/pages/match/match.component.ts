@@ -170,11 +170,9 @@ export class MatchComponent implements OnInit, OnDestroy {
 	}
 
 	setWinner(player: MatchPlayer, winner: boolean): void {
-		const players = [...this.match.players];
-		const index = players.findIndex(p => p.uuid === player.uuid);
-
+		const players = this.match.players.map(p => ({ uuid: p.uuid, winner: p.winner }));
+		const index = players.findIndex(p => p.uuid.id === player.uuid.id);
 		players[index].winner = winner;
-		delete players[index].player;
 
 		this.updatePlayers(this.match.id, players).then();
 	}
