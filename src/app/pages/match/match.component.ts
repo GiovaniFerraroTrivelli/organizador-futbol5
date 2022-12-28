@@ -4,13 +4,14 @@ import {Subscription} from 'rxjs';
 import {DbService} from '../../services/db.service';
 import {DomSanitizer, Title} from '@angular/platform-browser';
 import {AuthService} from '../../services/auth.service';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Action, DocumentSnapshot} from '@angular/fire/compat/firestore';
-import {Match} from '../../interfaces/match';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {DocumentChangeAction} from '@angular/fire/compat/firestore';
 import {Field} from '../../interfaces/field';
 import {environment} from '../../../environments/environment';
-import {Player} from '../../interfaces/player';
 import firebase from 'firebase/compat/app';
+import {Player} from '../../interfaces/player';
+import {Match} from '../../interfaces/match';
+import {MatchPlayer} from '../../interfaces/match-player';
 
 const Timestamp = firebase.firestore.Timestamp;
 
@@ -32,6 +33,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 	nameTaken: boolean;
 	selectedRow: number;
 	deleteConfirm: boolean;
+	players: Player[];
 
 	constructor(
 		private route: ActivatedRoute,
@@ -53,12 +55,8 @@ export class MatchComponent implements OnInit, OnDestroy {
 		this.field = null;
 
 		this.playerForm = this.formBuilder.group({
-			name: [null, [Validators.required, Validators.pattern('^.{1,32}$')]]
+			uuid: [null, Validators.required]
 		});
-	}
-
-	get name(): AbstractControl<any, any> {
-		return this.playerForm.get('name');
 	}
 
 	ngOnInit(): void {
@@ -66,6 +64,7 @@ export class MatchComponent implements OnInit, OnDestroy {
 
 		this.routeSub = this.route.params.subscribe(params => {
 			this.loadMatchById(params.id);
+			this.loadPlayers();
 		});
 	}
 
@@ -74,65 +73,71 @@ export class MatchComponent implements OnInit, OnDestroy {
 	}
 
 	loadMatchById(matchId: string): void {
-		const docRef = this.db.getMatchById(matchId);
+		this.db.getMatchById(matchId).subscribe((match) => {
+			console.log('Recarga emitida desde acá');
 
-		docRef.get().subscribe({
-			next: (doc) => {
-				if (doc.exists) {
-					docRef.snapshotChanges().subscribe((match: Action<DocumentSnapshot<Match>>) => {
-						this.match = {id: matchId, ...match.payload.data()};
+			if (match.payload.exists) {
+				this.match = {id: matchId, ...match.payload.data()};
 
-						if (!this.field) {
-							this.match.field.get()
-								.then(res => {
-									this.field = {...res.data()};
-									const embed = 'https://www.google.com/maps/embed/v1/place?q=' + encodeURIComponent(this.field.address) + '%2C%20santa%20fe%2C%20santa%20fe&key=' + environment.mapsApiKey;
-									this.field.embed = this.sanitizer.bypassSecurityTrustResourceUrl(embed);
-								}).catch(err => console.error(err));
-						}
-
-						this.sharerURL = `https://wa.me/?text=${encodeURIComponent(`Partido: ${this.match.name} - Jugadores: ${this.match.players?.length || 0} / 10 - https://f5.gft.ar/partido/${this.match.id}`)}`;
-
-						this.titleService.setTitle(match ? `Información de partido: ${this.match.name}` : 'Partido no encontrado');
-						this.loaded = true;
-					});
-				} else {
-					this.titleService.setTitle('Partido no encontrado');
-
-					this.loaded = true;
-					this.notFound = true;
+				if (!this.field) {
+					this.match.field.get()
+						.then(res => {
+							this.field = {...res.data()};
+							const embed = 'https://www.google.com/maps/embed/v1/place?q=' + encodeURIComponent(this.field.address) + '%2C%20santa%20fe%2C%20santa%20fe&key=' + environment.mapsApiKey;
+							this.field.embed = this.sanitizer.bypassSecurityTrustResourceUrl(embed);
+						}).catch(err => console.error(err));
 				}
+
+				console.log('Recargando match');
+
+				this.match.players.forEach((player, i) => {
+					console.log('Chequeando dato de jugador', player.uuid);
+					if (!player.player) {
+						player.uuid.get().then(res => this.match.players[i].player = res.data());
+					}
+				});
+
+				this.sharerURL = `https://wa.me/?text=${encodeURIComponent(`Partido: ${this.match.name} - Jugadores: ${this.match.players?.length || 0} / 10 - https://f5.gft.ar/partido/${this.match.id}`)}`;
+
+				this.titleService.setTitle(match ? `Información de partido: ${this.match.name}` : 'Partido no encontrado');
+				this.loaded = true;
+			} else {
+				this.titleService.setTitle('Partido no encontrado');
+
+				this.loaded = true;
+				this.notFound = true;
 			}
 		});
-
 	}
 
-	updatePlayers(documentId: string, players: Player[]): Promise<void> {
+	updatePlayers(documentId: string, players: MatchPlayer[]): Promise<void> {
 		return this.db.updatePlayers(documentId, players);
 	}
 
 	addPlayer(): void {
-		const values = {...this.playerForm.value};
-		values.name = values.name.trim();
-
-		if (!values.name) {
-			return;
-		}
-
-		this.nameTaken = (!!this.match.players.filter(player => player.name === values.name).length);
-
-		if (this.nameTaken) {
-			return;
-		}
-
-		this.match.players.push({
-			name: values.name,
-			uuid: this.getCurrentUserId(),
-			date: Timestamp.now()
-		});
+		const value = this.playerForm.get('uuid').value;
 
 		this.playerForm.disable();
-		this.updatePlayers(this.match.id, this.match.players).then(() => {
+
+		if (!value) {
+			return;
+		}
+
+		if (this.existsPlayerInMatch(value)) {
+			this.playerForm.setErrors({exists: true});
+			console.log('Existe ya!');
+			this.playerForm.enable();
+			this.playerForm.reset();
+
+			return;
+		}
+
+		const players = [
+			...this.match.players.map(p => ({uuid: p.uuid, winner: p.winner})),
+			{uuid: value, winner: null}
+		];
+
+		this.updatePlayers(this.match.id, players).then(() => {
 			this.playerForm.enable();
 			this.playerForm.reset();
 		});
@@ -153,10 +158,6 @@ export class MatchComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	canAddPlayer(): boolean {
-		return this.match.date > Timestamp.now();
-	}
-
 	deletePlayer(playerId: number): void {
 		const players = [...this.match.players];
 
@@ -165,8 +166,31 @@ export class MatchComponent implements OnInit, OnDestroy {
 	}
 
 	toggleIfApplies(row, jugador): void {
-		if (this.getCurrentUserId() === jugador.uuid || this.getCurrentUserId() === this.match.owner) {
-			this.selectedRow = (this.selectedRow === row) ? -1 : row;
-		}
+		this.selectedRow = (this.selectedRow === row) ? -1 : row;
+	}
+
+	setWinner(player: MatchPlayer, winner: boolean): void {
+		const players = [...this.match.players];
+		const index = players.findIndex(p => p.uuid === player.uuid);
+
+		players[index].winner = winner;
+		delete players[index].player;
+
+		this.updatePlayers(this.match.id, players).then();
+	}
+
+	private loadPlayers(): void {
+		this.players = [];
+
+		this.db.getPlayers().subscribe((snapshot: DocumentChangeAction<Player>[]) => {
+			this.players = snapshot.map(d => ({
+				uuid: d.payload.doc.id,
+				...d.payload.doc.data()
+			}));
+		});
+	}
+
+	private existsPlayerInMatch(uuid: string): boolean {
+		return !!this.match.players.find(player => player.uuid.id === uuid);
 	}
 }

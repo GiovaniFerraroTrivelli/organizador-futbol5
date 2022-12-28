@@ -21,6 +21,9 @@ import {CreateMatchComponent} from './dialogs/create-match/create-match.componen
 import {registerLocaleData} from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import {environment} from '../environments/environment';
+import {PlayersComponent} from './pages/players/players.component';
+import {CreatePlayerComponent} from './dialogs/create-player/create-player.component';
+import {ToDatePipe} from './pipes/to-date.pipe';
 
 registerLocaleData(localeEsAr, 'es-AR');
 
@@ -36,7 +39,10 @@ registerLocaleData(localeEsAr, 'es-AR');
 		FieldsComponent,
 		MatchComponent,
 		MatchTableComponent,
-		CreateMatchComponent
+		CreateMatchComponent,
+		PlayersComponent,
+		CreatePlayerComponent,
+		ToDatePipe
 	],
 	imports: [
 		BrowserModule,

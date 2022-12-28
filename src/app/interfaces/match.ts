@@ -1,13 +1,12 @@
-import {Player} from './player';
+import firebase from 'firebase/compat/app';
 import {DocumentReference} from '@angular/fire/compat/firestore';
 import {Field} from './field';
-import firebase from 'firebase/compat/app';
+import {MatchPlayer} from './match-player';
 
 export interface Match {
 	id?: string;
 	date: firebase.firestore.Timestamp;
-	players: Player[];
+	players: MatchPlayer[];
 	name: string;
-	owner: string;
 	field?: DocumentReference<Field>;
 }

@@ -20,6 +20,11 @@
                             Inicio
                         </a>
                         <a class="navbar-item" (click)="isMenuOpen = false"
+                           [class.is-active]="router.url === '/jugadores'"
+                           routerLink="/jugadores">
+                            Jugadores
+                        </a>
+                        <a class="navbar-item" (click)="isMenuOpen = false"
                            [class.is-active]="router.url === '/partidos'"
                            routerLink="/partidos">
                             Partidos

@@ -13,7 +13,7 @@
         </tr>
         <tr *ngFor="let match of matches" (click)="goToMatch(match.id)">
             <td>{{ match.name }}</td>
-            <td>{{ match.date?.toDate() | date: 'medium' }}</td>
+            <td>{{ match.date | toDate | date: 'd MMM y, HH:mm' }}</td>
             <td *ngIf="match.players">{{ match.players?.length || 0 }} / 10</td>
         </tr>
         </tbody>

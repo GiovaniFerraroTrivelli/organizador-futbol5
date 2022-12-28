@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {DbService} from '../../services/db.service';
 import {Title} from '@angular/platform-browser';
-import {Match} from '../../interfaces/match';
 import {DocumentChangeAction} from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
+import {Match} from '../../interfaces/match';
 
 const Timestamp = firebase.firestore.Timestamp;
 

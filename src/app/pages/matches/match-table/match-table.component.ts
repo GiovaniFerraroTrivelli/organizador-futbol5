@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Match} from '../../../interfaces/match';
 import {Router} from '@angular/router';
+import {Match} from '../../../interfaces/match';
 
 @Component({
 	selector: 'app-match-table',
